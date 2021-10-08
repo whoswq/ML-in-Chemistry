@@ -8,7 +8,7 @@ Last Modified: 2021/09/30
 
 from warnings import warn
 from sklearn import linear_model
-import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -28,7 +28,7 @@ class MLChemLab1:
 
     def fit(self, x, y, featurization_mode: str, degree=None):
         """Feature input X using given mode and fit model with featurized X and y
-        
+
         Args:
             x: Input X data.
             y: Input y data.
@@ -84,9 +84,15 @@ class MLChemLab1:
             return x
 
         elif self.featurization_mode == "poly-cos":
-            # Put your polynomial cosine featurization code HERE
-            raise NotImplementedError("poly-cos has not been implemented yet.")
-            return None
+            if 'degree' in kwargs and kwargs['degree'] is not None:
+                degree = kwargs['degree']
+            else:
+                warn("Using default degree=4 for polynomial featurization")
+                degree = 4  # default quartic polynomial
+            X = np.power(np.cos(x.reshape(-1, 1)),
+                         np.linspace(1, degree, degree)
+                         )  # get polynomial features [[X], [X^2], [X^3], ... ]
+            return X
         elif self.featurization_mode == "identical":
             # Do nothing, returns raw X data
             return x
@@ -140,15 +146,14 @@ def parse_dataset(train_data_file, test_data_file):
 
 
 def main():
-    train_data_file = sys.argv[
-        1]  # the first argument is the path to training data file
-    test_data_file = sys.argv[2]  # and the second argument for test data file
+    train_data_file = "%s/data/train.dat" % os.path.pardir
+    test_data_file = "./test.dat"
     train_x, train_y, test_x, test_y = parse_dataset(
         train_data_file, test_data_file)  # read data from files and parse them
     my_model = MLChemLab1()  # instantiation of the custom class
     my_model.add_model("ridge", alpha=1)  # add a model to it
     my_model.fit(train_x, train_y, featurization_mode="poly",
-                 degree=9)  # fit the model with training data
+                 degree=4)  # fit the model with training data
 
     y_predict = my_model.predict(
         test_x)  # make prediction with the trained model
