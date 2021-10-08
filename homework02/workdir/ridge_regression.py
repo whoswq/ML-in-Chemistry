@@ -241,6 +241,25 @@ def main():
     )
     plt.savefig("Params_polynomials.png", dpi=800)
     plt.close()
+    # plot the best fit curve
+    best_model = MLChemLab1()
+    best_model.add_mode("ridge", alpha=np.exp(2.5))
+    best_model.fit(train_x, train_y, "poly", degree=4)
+    y_pred_train = best_model.predict(train_x)
+    y_pred_test = best_model.predict(test_x)
+    print("polynomial-RMSE of train data")
+    print(best_model.evaluation(y_pred_train, train_y, "RMSE"))
+    print("polynomial-RMSE of test data")
+    print(best_model.evaluation(y_pred_test, test_y, "RMSE"))
+    print("polynomial-parameters of the model")
+    print([best_model.model.intercept_, *best_model.model.coef_])
+    plt.scatter(train_x, train_y, color="green", alpha=0.5, label="train data")
+    plt.scatter(test_x, test_y, color="red", s=0.1, label="test data")
+    plt.plot(test_x, y_pred_test, color="red", label="fit curve")
+    plt.ylim(-20, 20)
+    plt.savefig("fit_curve_polynomials.png", dpi=800)
+    plt.close()
+
     # generating train data under poly-cos feature
     ln_alpha_array, RMS_train, params, RMS_test = generate_data(my_model,
                                                                 train_x,
@@ -272,6 +291,23 @@ def main():
     plt.title(
         "parameters of different $\\lambda$ with poly-cos features(degree=4)")
     plt.savefig("Params_poly-cos.png", dpi=800)
+    plt.close()
+
+    best_model.add_mode("ridge", alpha=np.exp(-0.5))
+    best_model.fit(train_x, train_y, "poly-cos", degree=4)
+    y_pred_train = best_model.predict(train_x)
+    y_pred_test = best_model.predict(test_x)
+    print("poly-cos-RMSE of train data")
+    print(best_model.evaluation(y_pred_train, train_y, "RMSE"))
+    print("poly-cos-RMSE of test data")
+    print(best_model.evaluation(y_pred_test, test_y, "RMSE"))
+    print("poly-cos-parameters of the model")
+    print([best_model.model.intercept_, *best_model.model.coef_])
+    plt.scatter(train_x, train_y, color="green", alpha=0.5, label="train data")
+    plt.scatter(test_x, test_y, color="red", s=0.1, label="test data")
+    plt.plot(test_x, y_pred_test, color="red", label="fit curve")
+    plt.ylim(-20, 20)
+    plt.savefig("fit_curve_poly-cos.png", dpi=800)
     plt.close()
 
     # generating train data under poly-cos - x feature
@@ -306,6 +342,23 @@ def main():
     plt.title(
         "parameters of different $\\lambda$ with poly-cos-x features(degree=4)")
     plt.savefig("Params_poly-cos-x.png", dpi=800)
+    plt.close()
+
+    best_model.add_mode("ridge", alpha=np.exp(-0.5))
+    best_model.fit(train_x, train_y - train_x, "poly-cos", degree=4)
+    y_pred_train = best_model.predict(train_x) + train_x
+    y_pred_test = best_model.predict(test_x) + test_x
+    print("poly-cos-x-RMSE of train data")
+    print(best_model.evaluation(y_pred_train, train_y, "RMSE"))
+    print("poly-cos-x-RMSE of test data")
+    print(best_model.evaluation(y_pred_test, test_y, "RMSE"))
+    print("poly-cos-x-parameters of the model")
+    print([best_model.model.intercept_, *best_model.model.coef_])
+    plt.scatter(train_x, train_y, color="green", alpha=0.5, label="train data")
+    plt.scatter(test_x, test_y, color="red", s=0.1, label="test data")
+    plt.plot(test_x, y_pred_test, color="red", label="fit curve")
+    plt.ylim(-20, 20)
+    plt.savefig("fit_curve_poly-cos-x.png", dpi=800)
     plt.close()
 
 
